@@ -90,42 +90,46 @@ bot.command('stabsabfrage', stabsabfrage)
 function mesastqrv(ctx, next){
     let user = ctx.from.username
     let table = 'bereitschaftslog'
-    let sql =`INSERT INTO ${table} (time, user, rang, status) VALUES("${get_datetime(0)}-${get_datetime(1)}", "${user}", "MESAST", "aktiv");`
+    let sql = `INSERT INTO ${table} (time, user, rang, status) VALUES("${get_datetime(0)}-${get_datetime(1)}", "${user}", "MESAST", "aktiv");`
     let result = db_query(ctx,sql)
+    let msg = `${user} meldet sich als MESAST QRV`
     if(result){
-        ctx.reply(`${user} meldet sich als MESAST QRV`)
+        ctx.reply(msg)
     };
-    logger.info(`${user} meldet sich als MESAST QRV`);
+    logger.info(msg);
 }
 function mesastqrt(ctx, next){
     let user = ctx.from.username
     let table = 'bereitschaftslog'
     let sql =`INSERT INTO ${table} (time, user, rang, status) VALUES("${get_date()}", "${user}", "MESAST", "inaktiv");`
     let result = db_query(ctx,sql)
+    let msg = `${user} meldet sich als MESAST ab`
     if(result){
-        ctx.reply(`${user} meldet sich als MESAST ab`)
+        ctx.reply(msg)
     };
-    logger.info(`${user} meldet sich als MESAST ab`);
+    logger.info(msg);
 }
 function elqrv(ctx, next){
     let user = ctx.from.username
     let table = 'bereitschaftslog'
     let sql =`INSERT INTO ${table} (time, user, rang, status) VALUES("${get_date()}", "${user}", "EL", "aktiv");`
     let result = db_query(ctx,sql)
+    let msg = `${user} meldet sich als EL QRV`
     if(result){
-        ctx.reply(`${user} meldet sich als EL QRV`)
+        ctx.reply(msg)
     };
-    logger.info(`${user} meldet sich als EL QRV`);
+    logger.info(msg);
 }
 function elqrt(ctx, next){
     let user = ctx.from.username
     let table = 'bereitschaftslog'
     let sql = `INSERT INTO ${table} (time, user, event) VALUES("${get_date()}", "${user}", "el inaktiv");`
     let result = db_query(ctx,sql)
+    let msg = `${user} meldet sich als EL ab`
     if(result){
-        ctx.reply(`${user} meldet sich als EL ab`)
+        ctx.reply(msg)
     };
-    logger.info(`${user} meldet sich als EL ab`);
+    logger.info(msg);
 }
 function einsatzmeldung(ctx, next){
     let user = ctx.from.username
@@ -142,6 +146,7 @@ async function meldungsabfrage(ctx, next){
     let user = ctx.from.username
     let count = 5
     let table = 'einsatzmeldungen'
+    let DB = init_db()
     DB.query(`SELECT * FROM ${table} ORDER BY id DESC LIMIT ${count};`, function (err, result, fields) {
         if (err){
             log(err);
@@ -155,11 +160,13 @@ async function meldungsabfrage(ctx, next){
         ctx.reply(msg)
     });
     logger.info(`meldungsabfrage generiert.`);
+    DB.end()
 }
 async function stabsabfrage(ctx, next){
     let user = ctx.from.username
     let count = 2
     let table = "bereitschaftslog"
+    let DB = init_db()
     DB.query(`SELECT * FROM ${table} where status = "aktiv" ORDER BY id DESC LIMIT ${count};`, function (err, result, fields) {
         if (err){
             log(err);
@@ -172,6 +179,7 @@ async function stabsabfrage(ctx, next){
         });
         ctx.reply(msg)
     });
-    logger.info(`stabsabfrage generiert.`);
+    logger.info(`bereitschaftslog abfrage generiert.`);
+    DB.end()
 }
 bot.launch()
