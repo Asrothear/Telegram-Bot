@@ -164,19 +164,28 @@ async function meldungsabfrage(ctx, next){
 }
 async function stabsabfrage(ctx, next){
     let user = ctx.from.username
-    let count = 2
     let table = "bereitschaftslog"
     let DB = init_db()
-    DB.query(`SELECT * FROM ${table} where status = "aktiv" ORDER BY id DESC LIMIT ${count};`, function (err, result, fields) {
+    DB.query(`SELECT * FROM ${table} where status = "aktiv" ORDER BY id DESC;`, function (err, result, fields) {
         if (err){
             log(err);
             logger.error(`${get_datetime(0)} - ${get_datetime(1)}: ` + err);
             return
         }
-        let msg = " "
+        let msg = ""
+        let mes_c = 0;
+        let el_c = 0;
         result.forEach(x => {
-            msg =  msg + `${x.user} = ${x.rang}\n`
+            if(x.rang == "MESAST" && mes_c < 2){
+                mes_c ++;
+                msg = msg + "" + `${x.user} ${x.rang} ${x.status}\n`
+            }else if(x.rang == "EL" && el_c < 2){
+                el_c ++;
+                msg = msg + "" + `${x.user} ${x.rang} ${x.status}\n`
+            }
         });
+        mes_c = 0;
+        el_c = 0;
         ctx.reply(msg)
     });
     logger.info(`${get_datetime(0)} - ${get_datetime(1)}: bereitschaftslog abfrage generiert.`);
