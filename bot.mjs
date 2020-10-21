@@ -18,7 +18,7 @@ logger.debug('Some message');
 */
 
 const bot = new Telegraf(Config.token)
-
+log("Bot Startet")
 function init_db(){
     let DB = mysql.createConnection({
         host: Config.db.host,
@@ -78,7 +78,7 @@ function get_datetime(x)
 }
 
 
-bot.help((ctx) => ctx.reply('404 hilfe nicht gefunden, schon mal unterm Teppich geschaut ??'))
+bot.help((ctx) => bhelp(ctx))
 bot.command('mesast_qrv', mesastqrv)
 bot.command('mesast_qrt', mesastqrt)
 bot.command('el_qrv', elqrv)
@@ -86,6 +86,10 @@ bot.command('el_qrt', elqrt)
 bot.command('einsatzmeldung', einsatzmeldung)
 bot.command('meldungsabfrage', meldungsabfrage)
 bot.command('stabsabfrage', stabsabfrage)
+
+function bhelp(ctx){
+    bot.telegram.sendMessage(ctx.from.id, "text")
+}
 
 function mesastqrv(ctx, next){
     let user = ctx.from.username
